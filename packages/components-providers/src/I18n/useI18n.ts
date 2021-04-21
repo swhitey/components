@@ -24,9 +24,9 @@
 
  */
 
-import i18next, { InitOptions, Resource } from 'i18next'
+import i18next, { InitOptions, Resource, ResourceLanguage } from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { i18nResources } from './resources'
 
 export const i18nInitOptions: InitOptions = {
@@ -54,12 +54,14 @@ export const i18nInit = async (initOptions = i18nInitOptions) =>
     .use(initReactI18next) // passes i18n down to react-i18next
     .init(initOptions)
 
+export type ResourceGetter = (locale: string) => Promise<ResourceLanguage>
 export interface UseI18nProps {
   /**
    * @default en
    */
   locale?: string
   resources?: Resource
+  getLocaleResource?: ResourceGetter
 }
 
 export const i18nUpdate = ({ resources, locale }: UseI18nProps) => {
@@ -78,13 +80,21 @@ export const i18nUpdate = ({ resources, locale }: UseI18nProps) => {
 
 export const useI18n = ({
   locale = 'en',
+  getLocaleResource,
   resources = i18nResources,
 }: UseI18nProps) => {
+  const [ready, setReady] = useState(i18next.isInitialized)
+  const promiseRef = useRef<Promise<ResourceLanguage>>()
+
   if (!i18next.isInitialized) {
-    i18nInit({ ...i18nInitOptions, lng: locale, resources }).catch((err) =>
-      // eslint-disable-next-line no-console
-      console.error(err)
-    )
+    if (getLocaleResource) {
+      promiseRef.current = getLocaleResource(locale)
+    } else {
+      i18nInit({ ...i18nInitOptions, lng: locale, resources }).catch((err) =>
+        // eslint-disable-next-line no-console
+        console.error(err)
+      )
+    }
   }
 
   useEffect(() => {
@@ -92,10 +102,28 @@ export const useI18n = ({
     if (i18next.isInitialized) {
       update()
     } else {
-      i18next.on('initialized', update)
+      i18next.on('initialized', () => {
+        update()
+        setReady(true)
+      })
     }
+    promiseRef.current?.then((newResources) => {
+      i18nInit({
+        ...i18nInitOptions,
+        lng: locale,
+        resources: {
+          ...resources,
+          [locale]: { ...resources[locale], ...newResources },
+        },
+      }).catch((err) =>
+        // eslint-disable-next-line no-console
+        console.error(err)
+      )
+    })
     return () => {
       i18next.off('initialized', update)
     }
   }, [locale, resources])
+
+  return ready
 }

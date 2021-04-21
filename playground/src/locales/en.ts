@@ -23,35 +23,9 @@
  SOFTWARE.
 
  */
-import { ResourceLanguage } from 'i18next'
-import React from 'react'
-import { render } from 'react-dom'
-import { Chip, ComponentsProvider } from '@looker/components'
-import { TestComponent } from './TestComponent'
 
-export interface LocaleResourceModule {
-  default: ResourceLanguage
+export default {
+  TestComponent: {
+    'Hello World': 'Hello World!',
+  },
 }
-
-const getLocaleResource = async (locale: string): Promise<ResourceLanguage> => {
-  return import(`./locales/${locale}.ts`)
-    .catch((error) => {
-      throw error
-    })
-    .then((module: LocaleResourceModule) => module.default)
-}
-
-const App = () => {
-  return (
-    <ComponentsProvider
-      loadGoogleFonts
-      i18n={{ getLocaleResource, locale: 'es' }}
-    >
-      <TestComponent />
-      <Chip onDelete={() => alert('Deleted!')}>Delete Me</Chip>
-    </ComponentsProvider>
-  )
-}
-document.addEventListener('DOMContentLoaded', () => {
-  render(<App />, document.getElementById('container'))
-})

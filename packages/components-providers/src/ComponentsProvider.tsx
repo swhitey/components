@@ -40,8 +40,8 @@ import { FontFaceLoader } from './FontFaceLoader'
 import { StyleDefender } from './StyleDefender'
 export interface ComponentsProviderProps
   extends ThemeProviderProps,
-    ExtendComponentsTheme,
-    UseI18nProps {
+    ExtendComponentsTheme {
+  i18n?: UseI18nProps
   /**
    * Load any font faces specified on theme.fontSources
    * @default true
@@ -99,11 +99,10 @@ export interface ComponentsProviderProps
  */
 export const ComponentsProvider: FC<ComponentsProviderProps> = ({
   children,
+  i18n = {},
   loadFontSources = true,
   loadGoogleFonts = false,
   snapshotMode = false,
-  locale,
-  resources,
   themeCustomizations,
   ...props
 }) => {
@@ -122,8 +121,8 @@ export const ComponentsProvider: FC<ComponentsProviderProps> = ({
 
     return draft
   }, [props.theme, loadGoogleFonts, themeCustomizations])
-
-  useI18n({ locale, resources })
+  const ready = useI18n(i18n)
+  if (!ready) return null
 
   const ConditionalStyleDefender = snapshotMode ? Fragment : StyleDefender
 
