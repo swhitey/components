@@ -24,16 +24,33 @@
 
  */
 import React from 'react'
-import { Button, Chip, Space, useI18n } from '@looker/components'
+import {
+  Button,
+  Chip,
+  Space,
+  useI18n,
+  NamespaceResourceGetter,
+} from '@looker/components'
 
 const locales = ['es', 'en']
 
+const getResource: NamespaceResourceGetter = (locale: string) => {
+  return import(`./locales/${locale}.ts`)
+    .catch((error) => {
+      throw error
+    })
+    .then((module) => module.default.TestComponent)
+}
+
 export const TestComponent = () => {
-  const { locale, setLocale, t } = useI18n('TestComponent')
+  const { locale, setLocale, ready, t } = useI18n('TestComponent', {
+    getResource,
+  })
   const otherLocale = locales[Math.abs(locales.indexOf(locale) - 1)]
   const handleClick = () => {
     setLocale(otherLocale)
   }
+  if (!ready) return null
   return (
     <Space>
       <Chip onDelete={() => alert('Deleted!')}>{t('Hello World')}</Chip>

@@ -24,6 +24,7 @@
 
  */
 
+import i18next from 'i18next'
 import React, {
   createContext,
   FC,
@@ -57,7 +58,9 @@ export const I18nProvider: FC<I18nOptions> = ({
   getLocaleResource,
 }) => {
   const [locale, setLocale] = useState(initialLocale || 'en')
-  const [ready, setReady] = useState(getLocaleResource === undefined)
+  const [ready, setReady] = useState(
+    getLocaleResource === undefined && i18next.isInitialized
+  )
 
   const updateReady = useCallback(
     (newReady: boolean) => {
@@ -69,6 +72,9 @@ export const I18nProvider: FC<I18nOptions> = ({
   )
 
   useEffect(() => {
+    i18next.on('initialized', () => {
+      setReady(true)
+    })
     updateReady(false)
     i18nUpdate({ getLocaleResource, locale, resources }).then(() =>
       updateReady(true)

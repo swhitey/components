@@ -33,20 +33,9 @@ export interface LocaleResourceModule {
   default: ResourceLanguage
 }
 
-const getLocaleResource = async (locale: string): Promise<ResourceLanguage> => {
-  return import(`./locales/${locale}.ts`)
-    .catch((error) => {
-      throw error
-    })
-    .then((module: LocaleResourceModule) => module.default)
-}
-
 const App = () => {
   return (
-    <ComponentsProvider
-      loadGoogleFonts
-      i18n={{ getLocaleResource, locale: 'es' }}
-    >
+    <ComponentsProvider loadGoogleFonts i18n={{ locale: 'es' }}>
       <TestComponent />
     </ComponentsProvider>
   )

@@ -54,24 +54,35 @@ const hasGetResourceOption = (
 export const useI18n = (ns: string, options?: UseI18nOptions) => {
   const { locale, ready: contextReady, setLocale } = useContext(I18nContext)
 
-  const [ready, setReady] = useState(hasGetResourceOption(options))
   const { t } = useTranslation(ns)
 
   let getResource: NamespaceResourceGetter | undefined
+
   if (hasGetResourceOption(options)) {
     getResource = options.getResource
   } else {
-    i18next.addResourceBundle(locale, ns, options?.resources)
+    if (options) {
+      Object.keys(options.resources).forEach((lng: string) => {
+        // options.resources could contain multiple languages, need to add them 1 by 1
+        i18next.addResourceBundle(locale, ns, options.resources[lng])
+      })
+    }
   }
+  // If getResource is defined, set ready to false then true when resource is loaded
+  const [ready, setReady] = useState(getResource === undefined)
 
   useEffect(() => {
     if (getResource) {
       setReady(false)
-      getResource(locale).then(() => {
+      getResource(locale).then((resource) => {
+        i18next.addResourceBundle(locale, ns, resource)
         setReady(true)
       })
     }
-  }, [locale, getResource])
+  }, [getResource, locale, ns])
 
-  return { locale, ready: contextReady && ready, setLocale, t }
+  // ready should be false if either the I18nProvider-level ready
+  // or the current component-level one is false
+  const combinedReady = contextReady && ready
+  return { locale, ready: combinedReady, setLocale, t }
 }
