@@ -31,12 +31,14 @@ import { i18nResources } from './resources'
 import { I18nProvider } from './I18nProvider'
 
 describe('I18nProvider', () => {
-  test('initializes i18next', () => {
+  test('initializes i18next', async () => {
     render(
       <I18nProvider>
         <div>text</div>
       </I18nProvider>
     )
+    const text = await screen.findByText('text')
+    expect(text).toBeVisible()
     expect(i18next.init).toHaveBeenCalledTimes(1)
   })
 

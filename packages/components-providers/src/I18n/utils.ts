@@ -58,17 +58,15 @@ const i18nUpdateResources = (
   options: Required<Pick<InitOptions, 'lng' | 'resources'>>
 ) => {
   if (!i18next.isInitialized) {
-    i18nInit(options).catch((err) =>
-      // eslint-disable-next-line no-console
-      console.error(err)
-    )
-  }
-  Object.keys(options.resources).forEach((lng: string) => {
-    const allNamespaces = options.resources[lng]
-    Object.keys(allNamespaces).forEach((ns: string) => {
-      i18next.addResourceBundle(lng, ns, allNamespaces[ns])
+    i18nInit(options)
+  } else {
+    Object.keys(options.resources).forEach((lng: string) => {
+      const allNamespaces = options.resources[lng]
+      Object.keys(allNamespaces).forEach((ns: string) => {
+        i18next.addResourceBundle(lng, ns, allNamespaces[ns])
+      })
     })
-  })
+  }
   if (options.lng && options.lng !== i18next.language) {
     i18next.changeLanguage(options.lng)
   }
