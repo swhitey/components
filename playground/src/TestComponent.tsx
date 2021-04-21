@@ -23,15 +23,13 @@
  SOFTWARE.
 
  */
-import React, { useContext } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Button, Chip, Space, I18nContext } from '@looker/components'
+import React from 'react'
+import { Button, Chip, Space, useI18n } from '@looker/components'
 
 const locales = ['es', 'en']
 
 export const TestComponent = () => {
-  const { t } = useTranslation('TestComponent')
-  const { locale, setLocale } = useContext(I18nContext)
+  const { locale, setLocale, t } = useI18n('TestComponent')
   const otherLocale = locales[Math.abs(locales.indexOf(locale) - 1)]
   const handleClick = () => {
     setLocale(otherLocale)

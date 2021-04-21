@@ -24,8 +24,13 @@
 
  */
 
-import i18next from 'i18next'
-import React, { createContext, FC, useState, useEffect } from 'react'
+import React, {
+  createContext,
+  FC,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react'
 import { I18nOptions } from './types'
 import { i18nUpdate } from './utils'
 
@@ -52,18 +57,23 @@ export const I18nProvider: FC<I18nOptions> = ({
   getLocaleResource,
 }) => {
   const [locale, setLocale] = useState(initialLocale || 'en')
-  const [ready, setReady] = useState(i18next.isInitialized)
+  const [ready, setReady] = useState(getLocaleResource === undefined)
+
+  const updateReady = useCallback(
+    (newReady: boolean) => {
+      if (getLocaleResource) {
+        setReady(newReady)
+      }
+    },
+    [getLocaleResource]
+  )
 
   useEffect(() => {
-    setReady(false)
-    let isSubscribed = true
-    i18nUpdate({ getLocaleResource, locale, resources }).then(
-      () => isSubscribed && setReady(true)
+    updateReady(false)
+    i18nUpdate({ getLocaleResource, locale, resources }).then(() =>
+      updateReady(true)
     )
-    return () => {
-      isSubscribed = false
-    }
-  }, [locale, resources, getLocaleResource])
+  }, [locale, getLocaleResource, resources, updateReady])
 
   if (!ready) return null
 
