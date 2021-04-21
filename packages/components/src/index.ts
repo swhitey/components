@@ -69,6 +69,7 @@ export * from './utils'
 export {
   ComponentsProvider,
   ExtendComponentsThemeProvider,
+  I18nContext,
   i18nInit,
   i18nInitOptions,
   i18nResources,

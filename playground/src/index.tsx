@@ -26,7 +26,7 @@
 import { ResourceLanguage } from 'i18next'
 import React from 'react'
 import { render } from 'react-dom'
-import { Chip, ComponentsProvider } from '@looker/components'
+import { ComponentsProvider } from '@looker/components'
 import { TestComponent } from './TestComponent'
 
 export interface LocaleResourceModule {
@@ -48,7 +48,6 @@ const App = () => {
       i18n={{ getLocaleResource, locale: 'es' }}
     >
       <TestComponent />
-      <Chip onDelete={() => alert('Deleted!')}>Delete Me</Chip>
     </ComponentsProvider>
   )
 }

@@ -24,26 +24,31 @@
 
  */
 
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import i18next from 'i18next'
 import React from 'react'
 import { i18nResources } from './resources'
-import { useI18n, UseI18nProps } from './useI18n'
+import { I18nProvider } from './I18nProvider'
 
-const TestComponent = (props: UseI18nProps) => {
-  useI18n(props)
-  return null
-}
-
-describe('useI18n', () => {
+describe('I18nProvider', () => {
   test('initializes i18next', () => {
-    render(<TestComponent />)
+    render(
+      <I18nProvider>
+        <div>text</div>
+      </I18nProvider>
+    )
     expect(i18next.init).toHaveBeenCalledTimes(1)
   })
 
-  test('updates with new props', () => {
+  test('updates with new props', async () => {
     i18next.isInitialized = true
-    render(<TestComponent />)
+    render(
+      <I18nProvider>
+        <div>text</div>
+      </I18nProvider>
+    )
+    const text = await screen.findByText('text')
+    expect(text).toBeVisible()
     expect(i18next.addResourceBundle).toHaveBeenCalledTimes(
       Object.keys(i18nResources.en).length
     )

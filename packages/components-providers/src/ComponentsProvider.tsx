@@ -33,7 +33,7 @@ import React, { FC, Fragment, useMemo } from 'react'
 import { HelmetProvider } from 'react-helmet-async'
 import { FocusTrapProvider } from './FocusTrap'
 import { ScrollLockProvider } from './ScrollLock'
-import { useI18n, UseI18nProps } from './I18n'
+import { I18nOptions, I18nProvider } from './I18n'
 import { ThemeProvider, ThemeProviderProps } from './ThemeProvider'
 import { ExtendComponentsTheme } from './ExtendComponentsProvider'
 import { FontFaceLoader } from './FontFaceLoader'
@@ -41,7 +41,7 @@ import { StyleDefender } from './StyleDefender'
 export interface ComponentsProviderProps
   extends ThemeProviderProps,
     ExtendComponentsTheme {
-  i18n?: UseI18nProps
+  i18n?: I18nOptions
   /**
    * Load any font faces specified on theme.fontSources
    * @default true
@@ -121,8 +121,6 @@ export const ComponentsProvider: FC<ComponentsProviderProps> = ({
 
     return draft
   }, [props.theme, loadGoogleFonts, themeCustomizations])
-  const ready = useI18n(i18n)
-  if (!ready) return null
 
   const ConditionalStyleDefender = snapshotMode ? Fragment : StyleDefender
 
@@ -132,7 +130,9 @@ export const ComponentsProvider: FC<ComponentsProviderProps> = ({
         <ConditionalStyleDefender>
           {loadFontSources && <FontFaceLoader />}
           <FocusTrapProvider>
-            <ScrollLockProvider>{children}</ScrollLockProvider>
+            <ScrollLockProvider>
+              <I18nProvider {...i18n}>{children}</I18nProvider>
+            </ScrollLockProvider>
           </FocusTrapProvider>
         </ConditionalStyleDefender>
       </ThemeProvider>

@@ -24,7 +24,15 @@
 
  */
 
-export * from './I18nProvider'
-export * from './utils'
-export * from './resources'
-export * from './types'
+import { Resource, ResourceLanguage } from 'i18next'
+
+export type ResourceGetter = (locale: string) => Promise<ResourceLanguage>
+
+export interface I18nOptions {
+  /**
+   * @default en
+   */
+  locale?: string
+  resources?: Resource
+  getLocaleResource?: ResourceGetter
+}

@@ -23,11 +23,23 @@
  SOFTWARE.
 
  */
-import React from 'react'
+import React, { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Paragraph } from '@looker/components'
+import { Button, Chip, Space, I18nContext } from '@looker/components'
+
+const locales = ['es', 'en']
 
 export const TestComponent = () => {
   const { t } = useTranslation('TestComponent')
-  return <Paragraph>{t('Hello World')}</Paragraph>
+  const { locale, setLocale } = useContext(I18nContext)
+  const otherLocale = locales[Math.abs(locales.indexOf(locale) - 1)]
+  const handleClick = () => {
+    setLocale(otherLocale)
+  }
+  return (
+    <Space>
+      <Chip onDelete={() => alert('Deleted!')}>{t('Hello World')}</Chip>
+      <Button onClick={handleClick}>Switch to {otherLocale}</Button>
+    </Space>
+  )
 }
