@@ -27,16 +27,27 @@ import { ResourceLanguage } from 'i18next'
 import React from 'react'
 import { render } from 'react-dom'
 import { ComponentsProvider } from '@looker/components'
-import { TestComponent } from './TestComponent'
+import { I18nTest } from './I18nTest'
 
 export interface LocaleResourceModule {
   default: ResourceLanguage
 }
 
+const getLocaleResource = async (locale: string) => {
+  return import(`./locales/${locale}.ts`)
+    .catch((error) => {
+      throw error
+    })
+    .then((module: LocaleResourceModule) => module.default)
+}
+
 const App = () => {
   return (
-    <ComponentsProvider loadGoogleFonts i18n={{ locale: 'es' }}>
-      <TestComponent />
+    <ComponentsProvider
+      loadGoogleFonts
+      i18n={{ getLocaleResource, locale: 'es' }}
+    >
+      <I18nTest />
     </ComponentsProvider>
   )
 }

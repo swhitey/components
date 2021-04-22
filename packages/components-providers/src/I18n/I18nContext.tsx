@@ -23,38 +23,22 @@
  SOFTWARE.
 
  */
-import React from 'react'
-import {
-  Button,
-  Chip,
-  Space,
-  useI18n,
-  NamespaceResourceGetter,
-} from '@looker/components'
 
-const locales = ['es', 'en']
+import { createContext } from 'react'
 
-const getResource: NamespaceResourceGetter = (locale: string) => {
-  return import(`./locales/${locale}.ts`)
-    .catch((error) => {
-      throw error
-    })
-    .then((module) => module.default.TestComponent)
+export interface I18nContextProps {
+  locale: string
+  setLocale: (locale: string) => void
 }
 
-export const TestComponent = () => {
-  const { locale, setLocale, ready, t } = useI18n('TestComponent', {
-    getResource,
-  })
-  const otherLocale = locales[Math.abs(locales.indexOf(locale) - 1)]
-  const handleClick = () => {
-    setLocale(otherLocale)
-  }
-  if (!ready) return null
-  return (
-    <Space>
-      <Chip onDelete={() => alert('Deleted!')}>{t('Hello World')}</Chip>
-      <Button onClick={handleClick}>Switch to {otherLocale}</Button>
-    </Space>
-  )
-}
+console.log('create context')
+export const I18nContext = createContext<I18nContextProps>({
+  locale: 'en',
+  setLocale: () => {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Not implemented: Please wrap your component in ComponentsProvider'
+    )
+  },
+})
+I18nContext.displayName = 'I18nContext'

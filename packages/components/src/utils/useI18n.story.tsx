@@ -24,27 +24,39 @@
 
  */
 
-import { I18nContext } from '@looker/components-providers'
-import i18next from 'i18next'
-import { useContext } from 'react'
-import { useTranslation } from 'react-i18next'
+import React from 'react'
+import { Button } from '../Button'
+import { Chip } from '../Chip'
+import { Space } from '../Layout'
+import { useI18n } from './useI18n'
 
-export interface NamespaceResources {
-  [locale: string]: {
-    [key: string]: string
-  }
+export default {
+  component: useI18n,
+  title: 'useI18n',
 }
 
-export const useI18n = (ns: string, resources?: NamespaceResources) => {
-  const { locale, setLocale } = useContext(I18nContext)
-
-  if (resources) {
-    Object.keys(resources).forEach((lng: string) => {
-      // options.resources could contain multiple languages, need to add them 1 by 1
-      i18next.addResourceBundle(lng, ns, resources[lng])
-    })
-  }
-
-  const { t } = useTranslation(ns)
-  return { locale, setLocale, t }
+const locales = ['es', 'en']
+const resources = {
+  en: {
+    'Hello World': 'Hello World!',
+  },
+  es: {
+    'Hello World': '¡Hola Mundo!',
+  },
 }
+
+const LocalizedComponent = () => {
+  const { locale, setLocale, t } = useI18n('TestComponent', resources)
+  const otherLocale = locales[Math.abs(locales.indexOf(locale) - 1)]
+  const handleClick = () => {
+    setLocale(otherLocale)
+  }
+  return (
+    <Space>
+      <Chip onDelete={() => alert('Deleted!')}>{t('Hello World')}</Chip>
+      <Button onClick={handleClick}>Switch to {otherLocale}</Button>
+    </Space>
+  )
+}
+
+export const UpdateLocale = () => <LocalizedComponent />

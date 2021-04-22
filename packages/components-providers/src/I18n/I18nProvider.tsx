@@ -24,32 +24,10 @@
 
  */
 
-import i18next from 'i18next'
-import React, {
-  createContext,
-  FC,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react'
+import React, { FC, useState, useEffect, useRef } from 'react'
+import { I18nContext } from './I18nContext'
 import { I18nOptions } from './types'
-import { i18nUpdate } from './utils'
-
-export interface I18nContextProps {
-  locale: string
-  ready: boolean
-  setLocale: (locale: string) => void
-}
-
-export const I18nContext = createContext<I18nContextProps>({
-  locale: 'en',
-  ready: false,
-  setLocale: () => {
-    // eslint-disable-next-line no-console
-    console.warn('Not implemented: Please wrap your component in I18nProvider')
-  },
-})
-I18nContext.displayName = 'I18nContext'
+import { i18nUpdateGetResources, i18nUpdateResources } from './utils'
 
 export const I18nProvider: FC<I18nOptions> = ({
   children,
@@ -58,33 +36,29 @@ export const I18nProvider: FC<I18nOptions> = ({
   getLocaleResource,
 }) => {
   const [locale, setLocale] = useState(initialLocale || 'en')
-  const [ready, setReady] = useState(
-    getLocaleResource === undefined && i18next.isInitialized
-  )
+  const [ready, setReady] = useState(getLocaleResource === undefined)
 
-  const updateReady = useCallback(
-    (newReady: boolean) => {
-      if (getLocaleResource) {
-        setReady(newReady)
-      }
-    },
-    [getLocaleResource]
-  )
+  const firstRenderRef = useRef(true)
+  if (!getLocaleResource && firstRenderRef.current) {
+    i18nUpdateResources({ lng: locale, resources })
+  }
 
   useEffect(() => {
-    i18next.on('initialized', () => {
-      setReady(true)
-    })
-    updateReady(false)
-    i18nUpdate({ getLocaleResource, locale, resources }).then(() =>
-      updateReady(true)
-    )
-  }, [locale, getLocaleResource, resources, updateReady])
+    if (getLocaleResource) {
+      setReady(false)
+      i18nUpdateGetResources({ getLocaleResource, locale }).then(() => {
+        setReady(true)
+      })
+    } else if (!firstRenderRef.current) {
+      i18nUpdateResources({ lng: locale, resources })
+    }
+    firstRenderRef.current = false
+  }, [getLocaleResource, locale, resources])
 
   if (!ready) return null
 
   return (
-    <I18nContext.Provider value={{ locale, ready, setLocale }}>
+    <I18nContext.Provider value={{ locale, setLocale }}>
       {children}
     </I18nContext.Provider>
   )

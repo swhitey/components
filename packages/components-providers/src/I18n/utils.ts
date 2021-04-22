@@ -49,33 +49,34 @@ export const i18nInitOptions: InitOptions = {
   saveMissing: true,
 }
 
-export const i18nInit = (initOptions: Partial<InitOptions>) =>
+export const i18nInit = (initOptions: Partial<InitOptions>) => {
   i18next
     .use(initReactI18next) // passes i18n down to react-i18next
     .init({ ...i18nInitOptions, ...initOptions })
+}
 
-const i18nUpdateResources = (
-  options: Required<Pick<InitOptions, 'lng' | 'resources'>>
-) => {
+export const i18nUpdateResources = ({
+  lng,
+  resources = i18nResources,
+}: Pick<InitOptions, 'lng' | 'resources'>) => {
   if (!i18next.isInitialized) {
-    i18nInit(options)
-  } else {
-    Object.keys(options.resources).forEach((lng: string) => {
-      const allNamespaces = options.resources[lng]
+    i18nInit({ lng, resources })
+  } else if (resources) {
+    Object.keys(resources).forEach((lng: string) => {
+      const allNamespaces = resources[lng]
       Object.keys(allNamespaces).forEach((ns: string) => {
         i18next.addResourceBundle(lng, ns, allNamespaces[ns])
       })
     })
   }
-  if (options.lng && options.lng !== i18next.language) {
-    i18next.changeLanguage(options.lng)
+  if (lng && lng !== i18next.language) {
+    i18next.changeLanguage(lng)
   }
 }
 
-export const i18nUpdate = async ({
+export const i18nUpdateGetResources = async ({
   locale = 'en',
   getLocaleResource,
-  resources,
 }: I18nOptions) => {
   if (getLocaleResource) {
     const localeResource = await getLocaleResource(locale)
@@ -86,11 +87,6 @@ export const i18nUpdate = async ({
     i18nUpdateResources({
       lng: locale,
       resources: mergedResources,
-    })
-  } else {
-    i18nUpdateResources({
-      lng: locale,
-      resources: resources || i18nResources,
     })
   }
 }

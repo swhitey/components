@@ -23,28 +23,21 @@
  SOFTWARE.
 
  */
+import React from 'react'
+import { Button, Chip, Space, useI18n } from '@looker/components'
 
-import { I18nContext } from '@looker/components-providers'
-import i18next from 'i18next'
-import { useContext } from 'react'
-import { useTranslation } from 'react-i18next'
+const locales = ['es', 'en']
 
-export interface NamespaceResources {
-  [locale: string]: {
-    [key: string]: string
+export const I18nTest = () => {
+  const { locale, setLocale, t } = useI18n('TestComponent')
+  const otherLocale = locales[Math.abs(locales.indexOf(locale) - 1)]
+  const handleClick = () => {
+    setLocale(otherLocale)
   }
-}
-
-export const useI18n = (ns: string, resources?: NamespaceResources) => {
-  const { locale, setLocale } = useContext(I18nContext)
-
-  if (resources) {
-    Object.keys(resources).forEach((lng: string) => {
-      // options.resources could contain multiple languages, need to add them 1 by 1
-      i18next.addResourceBundle(lng, ns, resources[lng])
-    })
-  }
-
-  const { t } = useTranslation(ns)
-  return { locale, setLocale, t }
+  return (
+    <Space>
+      <Chip onDelete={() => alert('Deleted!')}>{t('Hello World')}</Chip>
+      <Button onClick={handleClick}>Switch to {otherLocale}</Button>
+    </Space>
+  )
 }
