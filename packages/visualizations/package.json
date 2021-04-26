@@ -11,7 +11,7 @@
  },
  "dependencies": {
   "@looker/sdk": "*",
-  "@looker/sdk-rtl": "^21.0.11",
+  "@looker/sdk-rtl": "^21.0.12",
   "@looker/visualizations-nivo": "*",
   "@looker/visualizations-table": "*",
   "@looker/visualizations-visx": "*",
