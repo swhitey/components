@@ -10,6 +10,7 @@
   "release": "yarn release-components && yarn release-deps"
  },
  "dependencies": {
+  "@looker/visualizations": "*",
   "lodash": "4.17.21"
  },
  "devDependencies": {
