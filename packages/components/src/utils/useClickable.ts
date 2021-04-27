@@ -25,19 +25,10 @@
  */
 
 import { CompatibleHTMLProps } from '@looker/design-tokens'
-import {
-  FocusEvent,
-  KeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  useState,
-  useMemo,
-} from 'react'
+import { KeyboardEvent, MouseEvent as ReactMouseEvent, useMemo } from 'react'
+import { FocusVisibleProps, useFocusVisible } from './useFocusVisible'
 
-// These 2 are helper interfaces for components using this hook
-export interface FocusVisibleProps {
-  focusVisible: boolean
-}
-
+// Helper interfaces for components using this hook
 export type GenericOnClick<E extends HTMLElement> = (
   e: ReactMouseEvent<E, MouseEvent> | KeyboardEvent<E>
 ) => void
@@ -62,25 +53,21 @@ export interface UseClickableResult<E extends HTMLElement>
  */
 export function useClickable<E extends HTMLElement>({
   disabled,
-  onBlur,
-  onClick,
-  onKeyUp,
   role,
+  ...rest
 }: UseClickableProps<E>): UseClickableResult<E> {
-  const [focusVisible, setFocusVisible] = useState(false)
+  const { onClick, onKeyUp, ...focusVisibleProps } = useFocusVisible(rest)
+
+  const propsOnClick = rest.onClick
 
   return useMemo(
     () => ({
       disabled,
-      focusVisible,
-      onBlur: (e: FocusEvent<E>) => {
-        onBlur?.(e)
-        setFocusVisible(false)
-      },
+      ...focusVisibleProps,
       onClick: (e: ReactMouseEvent<E, MouseEvent>) => {
         if (!disabled) {
+          // use onClick from useFocusVisible – it's the true click handler
           onClick?.(e)
-          setFocusVisible(false)
         }
       },
       onKeyUp: (e: KeyboardEvent<E>) => {
@@ -89,18 +76,18 @@ export function useClickable<E extends HTMLElement>({
           switch (e.key) {
             case 'Enter':
             case ' ':
-              onClick?.(e)
+              // call onClick from props, it's generic and can handle KeyboardEvent
+              propsOnClick?.(e)
               break
           }
-          setFocusVisible(true)
         }
-        onKeyUp?.(e)
+        onKeyUp(e)
       },
       // if onClick is used, role should be 'button' unless otherwise specified
       // otherwise undefined b/c depending on usage, 'button' could be misleading
-      role: role || (onClick ? 'button' : undefined),
+      role: role || (propsOnClick ? 'button' : undefined),
       tabIndex: disabled ? undefined : 0,
     }),
-    [disabled, focusVisible, onBlur, onClick, onKeyUp, role]
+    [disabled, role, propsOnClick, onClick, onKeyUp, focusVisibleProps]
   )
 }

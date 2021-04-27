@@ -32,9 +32,10 @@ import {
   shouldForwardProp,
 } from '@looker/design-tokens'
 import { StyledIconBase } from '@styled-icons/styled-icon'
-import React, { forwardRef, Ref, useState } from 'react'
+import React, { forwardRef, Ref } from 'react'
 import styled, { css } from 'styled-components'
 import { minWidth, maxWidth, width } from 'styled-system'
+import { useFocusVisible } from '../utils'
 import { buttonSize, buttonIconSizeMap, buttonPadding } from './size'
 import { buttonIcon } from './icon'
 import { ButtonProps } from './types'
@@ -98,25 +99,13 @@ const ButtonJSX = forwardRef(
       ...restProps
     } = props
 
-    const [isFocusVisible, setFocusVisible] = useState(false)
-
-    const handleOnKeyUp = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-      setFocusVisible(true)
-      onKeyUp && onKeyUp(event)
-    }
-
-    const handleOnBlur = (event: React.FocusEvent<HTMLButtonElement>) => {
-      setFocusVisible(false)
-      onBlur && onBlur(event)
-    }
+    const focusVisibleProps = useFocusVisible({ onBlur, onKeyUp })
 
     return (
       <ButtonOuter
         {...restProps}
+        {...focusVisibleProps}
         size={size}
-        focusVisible={isFocusVisible}
-        onKeyUp={handleOnKeyUp}
-        onBlur={handleOnBlur}
         ref={ref}
         px={buttonPadding(!!(iconBefore || iconAfter), size)}
       >

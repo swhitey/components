@@ -24,19 +24,18 @@
 
  */
 
-import React, { FC, KeyboardEvent, Ref, forwardRef, useState } from 'react'
+import React, { FC, Ref, forwardRef } from 'react'
 import styled from 'styled-components'
 import {
   TypographyProps,
   typography,
-  CompatibleHTMLProps,
   padding,
   PaddingProps,
   shouldForwardProp,
   TextColorProps,
   color as colorStyleFn,
 } from '@looker/design-tokens'
-import { useWrapEvent } from '../utils'
+import { GenericClickProps, useClickable, useWrapEvent } from '../utils'
 import { simpleLayoutCSS, SimpleLayoutProps } from '../Layout/utils/simple'
 import { AccordionDisclosureLayout } from './AccordionDisclosureLayout'
 import { AccordionControlProps, AccordionIndicatorProps } from './types'
@@ -45,7 +44,7 @@ import { accordionDefaults } from './accordionDefaults'
 export interface AccordionDisclosureProps
   extends TypographyProps,
     Omit<AccordionDisclosureStyleProps, 'focusVisible'>,
-    CompatibleHTMLProps<HTMLElement>,
+    GenericClickProps<HTMLDivElement>,
     SimpleLayoutProps,
     AccordionControlProps,
     AccordionIndicatorProps {
@@ -72,8 +71,9 @@ const AccordionDisclosureInternal: FC<AccordionDisclosureProps> = forwardRef(
       accordionDisclosureId,
       children,
       className,
+      disabled,
       onBlur,
-      onClick,
+      onClick: propsOnClick,
       onKeyDown,
       onKeyUp,
       defaultOpen,
@@ -89,35 +89,15 @@ const AccordionDisclosureInternal: FC<AccordionDisclosureProps> = forwardRef(
     },
     ref
   ) => {
-    const [isFocusVisible, setFocusVisible] = useState(false)
-
     const handleOpen = () => onOpen && onOpen()
     const handleClose = () => onClose && onClose()
     const handleToggle = () => {
       isOpen ? handleClose() : handleOpen()
       toggleOpen && toggleOpen(!isOpen)
     }
+    const onClick = useWrapEvent(handleToggle, propsOnClick)
 
-    const handleKeyDown = useWrapEvent(
-      (event: KeyboardEvent<HTMLElement>) =>
-        event.key === 'Enter' && handleToggle(),
-      onKeyDown
-    )
-
-    const handleKeyUp = useWrapEvent(
-      (event: KeyboardEvent<HTMLElement>) =>
-        event.key === 'Tab' &&
-        event.currentTarget === event.target &&
-        setFocusVisible(true),
-      onKeyUp
-    )
-
-    const handleClick = useWrapEvent(() => {
-      setFocusVisible(false)
-      handleToggle()
-    }, onClick)
-
-    const handleBlur = useWrapEvent(() => setFocusVisible(false), onBlur)
+    const clickableProps = useClickable({ disabled, onBlur, onClick, onKeyUp })
 
     return (
       <AccordionDisclosureStyle
@@ -125,14 +105,10 @@ const AccordionDisclosureInternal: FC<AccordionDisclosureProps> = forwardRef(
         role="button"
         aria-controls={accordionContentId}
         aria-expanded={isOpen}
-        focusVisible={isFocusVisible}
         id={accordionDisclosureId}
-        onBlur={handleBlur}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        onKeyUp={handleKeyUp}
         ref={ref}
         tabIndex={0}
+        {...clickableProps}
         {...props}
       >
         <AccordionDisclosureLayout

@@ -39,13 +39,15 @@ import {
   TextColorProps,
   TypographyProps,
   typography,
-  CompatibleHTMLProps,
 } from '@looker/design-tokens'
 import { simpleLayoutCSS, SimpleLayoutProps } from '../Layout/utils/simple'
 import { useID } from '../utils'
 import { accordionDefaults, accordionLeftDefaults } from './accordionDefaults'
 import { AccordionContent } from './AccordionContent'
-import { AccordionDisclosure } from './AccordionDisclosure'
+import {
+  AccordionDisclosure,
+  AccordionDisclosureProps,
+} from './AccordionDisclosure'
 import { AccordionControlProps, AccordionIndicatorProps } from './types'
 
 /**
@@ -68,7 +70,7 @@ export const AccordionControlPropKeys = [
 export interface AccordionProps
   extends AccordionControlProps,
     AccordionIndicatorProps,
-    Omit<CompatibleHTMLProps<HTMLElement>, 'content'>,
+    Omit<AccordionDisclosureProps, 'content'>,
     SimpleLayoutProps,
     TextColorProps,
     TypographyProps {
