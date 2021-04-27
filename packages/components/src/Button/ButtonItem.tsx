@@ -24,7 +24,7 @@
 
  */
 
-import React, { forwardRef, MouseEvent, Ref, useContext, useState } from 'react'
+import React, { forwardRef, Ref, useContext } from 'react'
 import styled from 'styled-components'
 import {
   CompatibleHTMLProps,
@@ -32,43 +32,36 @@ import {
   SpaceProps,
   omitStyledProps,
 } from '@looker/design-tokens'
+import { FocusVisibleProps, useFocusVisible, useWrapEvent } from '../utils'
 import { inputHeight } from '../Form/Inputs/height'
 import { ButtonSetContext } from './ButtonSetContext'
 
 export interface ButtonItemProps
   extends SpaceProps,
+    FocusVisibleProps,
     Omit<CompatibleHTMLProps<HTMLButtonElement>, 'type' | 'aria-pressed'> {
   value?: string
-  focusVisible?: boolean
 }
 
 const ButtonLayout = forwardRef(
   (
-    { children, onClick, value, onBlur, onKeyUp, ...props }: ButtonItemProps,
+    {
+      children,
+      onClick: propsOnClick,
+      value,
+      onBlur,
+      onKeyUp,
+      ...props
+    }: ButtonItemProps,
     ref: Ref<HTMLButtonElement>
   ) => {
     const { disabled, value: contextValue, onItemClick } = useContext(
       ButtonSetContext
     )
 
-    const [isFocusVisible, setFocusVisible] = useState(false)
+    const onClick = useWrapEvent(onItemClick, propsOnClick)
 
-    const handleOnKeyUp = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-      setFocusVisible(true)
-      onKeyUp && onKeyUp(event)
-    }
-
-    const handleOnBlur = (event: React.FocusEvent<HTMLButtonElement>) => {
-      setFocusVisible(false)
-      onBlur && onBlur(event)
-    }
-
-    function handleClick(e: MouseEvent<HTMLButtonElement>) {
-      onClick && onClick(e)
-      if (!e.defaultPrevented) {
-        onItemClick && onItemClick(e)
-      }
-    }
+    const focusVisibleProps = useFocusVisible({ onClick })
 
     const itemValue =
       value !== undefined ? value : typeof children === 'string' ? children : ''
@@ -83,12 +76,9 @@ const ButtonLayout = forwardRef(
       <ButtonOuter
         aria-pressed={selected}
         ref={ref}
-        onClick={handleClick}
         value={itemValue}
         disabled={disabled}
-        focusVisible={isFocusVisible}
-        onKeyUp={handleOnKeyUp}
-        onBlur={handleOnBlur}
+        {...focusVisibleProps}
         {...omitStyledProps(props)}
       >
         {children}

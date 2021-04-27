@@ -31,6 +31,7 @@ import {
   SpaceProps,
   WidthProps,
 } from 'styled-system'
+import { FocusVisibleProps } from '../utils'
 import { IconType } from '../Icon'
 import { ButtonSizeProps, ButtonSizes } from './size'
 
@@ -45,7 +46,8 @@ export interface ButtonBaseProps
     MaxWidthProps,
     MinWidthProps,
     WidthProps,
-    SpaceProps {
+    SpaceProps,
+    FocusVisibleProps {
   type?: 'button' | 'submit' | 'reset'
 
   /**
@@ -53,8 +55,6 @@ export interface ButtonBaseProps
    * @default "key"
    */
   color?: StatefulColor
-
-  focusVisible?: boolean
 }
 
 export interface ButtonProps extends ButtonBaseProps, ButtonIconProps {

@@ -35,7 +35,12 @@ import {
   TextColorProps,
   color as colorStyleFn,
 } from '@looker/design-tokens'
-import { GenericClickProps, useClickable, useWrapEvent } from '../utils'
+import {
+  FocusVisibleProps,
+  GenericClickProps,
+  useClickable,
+  useWrapEvent,
+} from '../utils'
 import { simpleLayoutCSS, SimpleLayoutProps } from '../Layout/utils/simple'
 import { AccordionDisclosureLayout } from './AccordionDisclosureLayout'
 import { AccordionControlProps, AccordionIndicatorProps } from './types'
@@ -49,7 +54,6 @@ export interface AccordionDisclosureProps
     AccordionControlProps,
     AccordionIndicatorProps {
   className?: string
-  focusVisible?: boolean
   ref?: Ref<HTMLDivElement>
   /**
    * ID of the corresponding AccordionContent container
@@ -129,9 +133,10 @@ const AccordionDisclosureInternal: FC<AccordionDisclosureProps> = forwardRef(
 
 AccordionDisclosureInternal.displayName = 'AccordionDisclosureInternal'
 
-interface AccordionDisclosureStyleProps extends TextColorProps, PaddingProps {
-  focusVisible: boolean
-}
+interface AccordionDisclosureStyleProps
+  extends TextColorProps,
+    PaddingProps,
+    FocusVisibleProps {}
 
 export const AccordionDisclosureStyle = styled.div
   .withConfig({ shouldForwardProp })
