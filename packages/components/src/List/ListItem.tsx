@@ -42,6 +42,7 @@ import {
   HoverDisclosureContext,
   HoverDisclosure,
   undefinedCoalesce,
+  useFocusVisible,
   useWrapEvent,
 } from '../utils'
 import { ListItemContext } from './ListItemContext'
@@ -159,34 +160,32 @@ const ListItemInternal = forwardRef(
     const itemDimensions = listItemDimensions(propsDensity || contextDensity)
     const keyColor = undefinedCoalesce([propsKeyColor, contextKeyColor])
 
-    const [focusVisible, setFocusVisible] = useState(false)
     const [hovered, setHovered] = useState(false)
 
     const labelColor = disabled ? 'text1' : color
     const descriptionColor = disabled ? 'text1' : 'text2'
 
-    const handleOnBlur = (event: React.FocusEvent<HTMLElement>) => {
-      setFocusVisible(false)
-      onBlur && onBlur(event)
-    }
-
     const handleOnClick = (event: React.MouseEvent<HTMLElement>) => {
-      setFocusVisible(false)
-
       if (itemRole !== 'none' && onClick) {
         onClick(event)
       }
     }
 
-    const handleOnKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-      onKeyDown && onKeyDown(event)
-      setFocusVisible(true)
+    const handleOnClickWhitespace = (event: React.MouseEvent<HTMLElement>) => {
+      if (event.currentTarget === event.target) {
+        onClickWhitespace && onClickWhitespace(event)
+      }
     }
 
-    const handleOnKeyUp = (event: React.KeyboardEvent<HTMLElement>) => {
-      onKeyUp && onKeyUp(event)
-      setFocusVisible(true)
-    }
+    const {
+      focusVisible,
+      onClick: outerOnClick,
+      ...focusVisibleHandlers
+    } = useFocusVisible({
+      onBlur,
+      onClick: handleOnClickWhitespace,
+      onKeyUp,
+    })
 
     const handleOnMouseEnter = useWrapEvent(
       () => setHovered(true),
@@ -262,14 +261,12 @@ const ListItemInternal = forwardRef(
         className={className}
         height={itemDimensions.height}
         href={href}
-        onBlur={handleOnBlur}
         onClick={disabled ? undefined : handleOnClick}
-        onKeyDown={handleOnKeyDown}
-        onKeyUp={handleOnKeyUp}
         rel={createSafeRel(rel, target)}
         role={role || 'listitem'}
         target={target}
         tabIndex={-1}
+        {...focusVisibleHandlers}
         {...statefulProps}
       >
         {children}
@@ -294,13 +291,6 @@ const ListItemInternal = forwardRef(
       </Layout>
     )
 
-    const handleOnClickWhitespace = (event: React.MouseEvent<HTMLElement>) => {
-      if (event.currentTarget === event.target) {
-        setFocusVisible(true)
-        onClickWhitespace && onClickWhitespace(event)
-      }
-    }
-
     return (
       <HoverDisclosureContext.Provider value={{ visible: hovered }}>
         <ListItemWrapper
@@ -308,7 +298,7 @@ const ListItemInternal = forwardRef(
           description={description}
           disabled={disabled}
           focusVisible={focusVisible}
-          onClick={handleOnClickWhitespace}
+          onClick={outerOnClick}
           onMouseEnter={handleOnMouseEnter}
           onMouseLeave={handleOnMouseLeave}
           ref={ref}

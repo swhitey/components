@@ -28,25 +28,26 @@ import {
   buttonShadow,
   reset,
   space,
-  StatefulColor,
   shouldForwardProp,
 } from '@looker/design-tokens'
 import { StyledIconBase } from '@styled-icons/styled-icon'
 import React, { forwardRef, Ref } from 'react'
 import styled, { css } from 'styled-components'
 import { minWidth, maxWidth, width } from 'styled-system'
-import { useFocusVisible } from '../utils'
+import { FocusVisibleProps, useFocusVisible } from '../utils'
 import { buttonSize, buttonIconSizeMap, buttonPadding } from './size'
 import { buttonIcon } from './icon'
-import { ButtonProps } from './types'
+import { ButtonColorProps, ButtonProps } from './types'
+import { ToggleColorProps } from './iconButtonTypes'
 
-const buttonCSS = (color: StatefulColor, focusVisible?: boolean) => css`
+const buttonCSS = css<ButtonColorProps & ToggleColorProps & FocusVisibleProps>`
   ${reset}
   ${maxWidth}
   ${minWidth}
   ${width}
 
-  ${focusVisible && buttonShadow(color)}
+  ${({ color, toggleColor, focusVisible }) =>
+    focusVisible && buttonShadow(toggleColor || color)}
 
   align-items: center;
   border-radius: ${({ theme }) => theme.radii.medium};
@@ -80,15 +81,18 @@ export const buttonIconSize = css<ButtonProps>`
   }
 `
 
+type ButtonBaseProps = ButtonProps & ToggleColorProps
+type ButtonOuterProps = ButtonBaseProps & FocusVisibleProps
+
 const ButtonOuter = styled.button
   .withConfig({ shouldForwardProp })
-  .attrs(({ color = 'key' }) => ({ color }))<ButtonProps>`
-  ${({ color, focusVisible }) => buttonCSS(color, focusVisible)}
+  .attrs(({ color = 'key' }) => ({ color }))<ButtonOuterProps>`
+  ${buttonCSS}
   ${({ fullWidth }) => fullWidth && `width: 100%;`}
 `
 
 const ButtonJSX = forwardRef(
-  (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
+  (props: ButtonBaseProps, ref: Ref<HTMLButtonElement>) => {
     const {
       children,
       iconBefore,
