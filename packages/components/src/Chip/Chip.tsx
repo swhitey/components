@@ -27,13 +27,14 @@
 import { useTranslation } from 'react-i18next'
 import { reset } from '@looker/design-tokens'
 import React, { forwardRef, KeyboardEvent, MouseEvent, Ref } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { maxWidth, MaxWidthProps } from 'styled-system'
 import { Close } from '@styled-icons/material/Close'
 import {
   useClickable,
-  GenericClickProps,
+  focusVisibleCSSWrapper,
   FocusVisibleProps,
+  GenericClickProps,
   useWrapEvent,
 } from '../utils'
 import { IconButton } from '../Button/IconButton'
@@ -87,8 +88,11 @@ const ChipStyle = styled.span<FocusVisibleProps & MaxWidthProps>`
     outline: none;
   }
 
-  ${({ focusVisible, theme: { colors } }) =>
-    focusVisible && `box-shadow: 0 0 0 1px ${colors.key};`}
+  ${focusVisibleCSSWrapper(
+    ({ theme }) => css`
+      box-shadow: 0 0 0.5px 1px ${theme.colors.keyFocus};
+    `
+  )}
 
   &:active {
     border-color: ${({ theme }) => theme.colors.key};

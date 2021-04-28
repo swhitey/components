@@ -34,7 +34,11 @@ import { StyledIconBase } from '@styled-icons/styled-icon'
 import React, { forwardRef, Ref } from 'react'
 import styled, { css } from 'styled-components'
 import { minWidth, maxWidth, width } from 'styled-system'
-import { FocusVisibleProps, useFocusVisible } from '../utils'
+import {
+  FocusVisibleProps,
+  useFocusVisible,
+  focusVisibleCSSWrapper,
+} from '../utils'
 import { buttonSize, buttonIconSizeMap, buttonPadding } from './size'
 import { buttonIcon } from './icon'
 import { ButtonColorProps, ButtonProps } from './types'
@@ -46,8 +50,9 @@ const buttonCSS = css<ButtonColorProps & ToggleColorProps & FocusVisibleProps>`
   ${minWidth}
   ${width}
 
-  ${({ color, toggleColor, focusVisible }) =>
-    focusVisible && buttonShadow(toggleColor || color)}
+  ${focusVisibleCSSWrapper(({ color, toggleColor }) =>
+    buttonShadow(toggleColor || color)
+  )}
 
   align-items: center;
   border-radius: ${({ theme }) => theme.radii.medium};
@@ -99,16 +104,17 @@ const ButtonJSX = forwardRef(
       iconAfter,
       onBlur,
       onKeyUp,
+      onClick,
       size = 'medium',
       ...restProps
     } = props
 
-    const focusVisibleProps = useFocusVisible({ onBlur, onKeyUp })
+    const focusVisibleProps = useFocusVisible({ onBlur, onClick, onKeyUp })
 
     return (
       <ButtonOuter
-        {...restProps}
         {...focusVisibleProps}
+        {...restProps}
         size={size}
         ref={ref}
         px={buttonPadding(!!(iconBefore || iconAfter), size)}

@@ -32,6 +32,12 @@ import {
   useMemo,
   useState,
 } from 'react'
+import {
+  css,
+  DefaultTheme,
+  FlattenInterpolation,
+  ThemedStyledProps,
+} from 'styled-components'
 import { isMouseClick } from './isMouseClick'
 
 export interface FocusVisibleProps {
@@ -44,6 +50,19 @@ export type UseFocusVisibleProps<E extends HTMLElement> = Pick<
   CompatibleHTMLProps<E>,
   FocusVisibleHandlers
 >
+
+export const focusVisibleCSSWrapper = <Props extends FocusVisibleProps>(
+  styleFn: (
+    props: ThemedStyledProps<Props, DefaultTheme>
+  ) => FlattenInterpolation<ThemedStyledProps<Props, DefaultTheme>>
+) => css<Props>`
+  &:focus-visible {
+    ${styleFn}
+  }
+  &:focus {
+    ${(props) => props.focusVisible && styleFn(props)}
+  }
+`
 
 export const useFocusVisible = <E extends HTMLElement = HTMLElement>({
   onBlur,

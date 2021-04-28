@@ -25,14 +25,19 @@
  */
 
 import React, { forwardRef, Ref, useContext } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import {
   CompatibleHTMLProps,
   space,
   SpaceProps,
   omitStyledProps,
 } from '@looker/design-tokens'
-import { FocusVisibleProps, useFocusVisible, useWrapEvent } from '../utils'
+import {
+  focusVisibleCSSWrapper,
+  FocusVisibleProps,
+  useFocusVisible,
+  useWrapEvent,
+} from '../utils'
 import { inputHeight } from '../Form/Inputs/height'
 import { ButtonSetContext } from './ButtonSetContext'
 
@@ -92,9 +97,11 @@ ButtonLayout.displayName = 'ButtonLayout'
 const ButtonOuter = styled.button.attrs(({ type = 'button' }) => ({
   type,
 }))<ButtonItemProps>`
-  ${(props) =>
-    props.focusVisible &&
-    `box-shadow: 0 0 0.5px 1px ${props.theme.colors.keyFocus}`}
+  ${focusVisibleCSSWrapper(
+    ({ theme }) => css`
+      box-shadow: 0 0 0.5px 1px ${theme.colors.keyFocus};
+    `
+  )}
 `
 
 export const ButtonItem = styled(ButtonLayout)`
