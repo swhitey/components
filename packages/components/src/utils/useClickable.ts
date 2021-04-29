@@ -52,13 +52,12 @@ export interface UseClickableResult<E extends HTMLElement>
  * that is both focus-able and clickable. The component should handle styling for focusVisible.
  */
 export function useClickable<E extends HTMLElement>({
+  onClick,
   disabled,
   role,
   ...rest
 }: UseClickableProps<E>): UseClickableResult<E> {
-  const { onClick, onKeyUp, ...focusVisibleProps } = useFocusVisible(rest)
-
-  const propsOnClick = rest.onClick
+  const { onKeyUp, ...focusVisibleProps } = useFocusVisible(rest)
 
   return useMemo(
     () => ({
@@ -76,8 +75,7 @@ export function useClickable<E extends HTMLElement>({
           switch (e.key) {
             case 'Enter':
             case ' ':
-              // call onClick from props, it's generic and can handle KeyboardEvent
-              propsOnClick?.(e)
+              onClick?.(e)
               break
           }
         }
@@ -85,9 +83,9 @@ export function useClickable<E extends HTMLElement>({
       },
       // if onClick is used, role should be 'button' unless otherwise specified
       // otherwise undefined b/c depending on usage, 'button' could be misleading
-      role: role || (propsOnClick ? 'button' : undefined),
+      role: role || (onClick ? 'button' : undefined),
       tabIndex: disabled ? undefined : 0,
     }),
-    [disabled, role, propsOnClick, onClick, onKeyUp, focusVisibleProps]
+    [disabled, role, onClick, onClick, onKeyUp, focusVisibleProps]
   )
 }

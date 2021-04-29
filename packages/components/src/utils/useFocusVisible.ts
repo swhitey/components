@@ -25,30 +25,21 @@
  */
 
 import { CompatibleHTMLProps } from '@looker/design-tokens'
-import {
-  FocusEvent,
-  KeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  useMemo,
-  useState,
-} from 'react'
+import { FocusEvent, KeyboardEvent, useMemo, useState } from 'react'
 import {
   css,
   DefaultTheme,
   FlattenInterpolation,
   ThemedStyledProps,
 } from 'styled-components'
-import { isMouseClick } from './isMouseClick'
 
 export interface FocusVisibleProps {
   focusVisible: boolean
 }
 
-export type FocusVisibleHandlers = 'onBlur' | 'onClick' | 'onKeyUp'
-
 export type UseFocusVisibleProps<E extends HTMLElement> = Pick<
   CompatibleHTMLProps<E>,
-  FocusVisibleHandlers
+  'onBlur' | 'onKeyUp'
 >
 
 export const focusVisibleCSSWrapper = <Props extends FocusVisibleProps>(
@@ -66,7 +57,6 @@ export const focusVisibleCSSWrapper = <Props extends FocusVisibleProps>(
 
 export const useFocusVisible = <E extends HTMLElement = HTMLElement>({
   onBlur,
-  onClick,
   onKeyUp,
 }: UseFocusVisibleProps<E>) => {
   const [isFocusVisible, setFocusVisible] = useState(false)
@@ -78,13 +68,6 @@ export const useFocusVisible = <E extends HTMLElement = HTMLElement>({
         setFocusVisible(false)
         onBlur?.(e)
       },
-      onClick: (e: ReactMouseEvent<E, MouseEvent>) => {
-        // Only turn off visible focus if it was a mouse click, not a keyboard "click"
-        if (isMouseClick(e)) {
-          setFocusVisible(false)
-        }
-        onClick?.(e)
-      },
       onKeyUp: (e: KeyboardEvent<E>) => {
         if (e.currentTarget === e.target) {
           setFocusVisible(true)
@@ -92,5 +75,5 @@ export const useFocusVisible = <E extends HTMLElement = HTMLElement>({
         onKeyUp?.(e)
       },
     }
-  }, [isFocusVisible, onBlur, onClick, onKeyUp])
+  }, [isFocusVisible, onBlur, onKeyUp])
 }

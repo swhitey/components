@@ -47,17 +47,9 @@ export interface DataTableCellProps
 
 const DataTableCellLayout = forwardRef(
   (props: DataTableCellProps, forwardedRef: Ref<HTMLElement>) => {
-    const {
-      children,
-      description,
-      indicator,
-      onBlur,
-      onClick,
-      onKeyUp,
-      size,
-    } = props
+    const { children, description, indicator, onBlur, onKeyUp, size } = props
 
-    const focusVisibleProps = useFocusVisible({ onBlur, onClick, onKeyUp })
+    const focusVisibleProps = useFocusVisible({ onBlur, onKeyUp })
 
     let content =
       size && size !== 'nowrap' ? <Truncate>{children}</Truncate> : children

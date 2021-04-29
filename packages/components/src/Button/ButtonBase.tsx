@@ -104,12 +104,11 @@ const ButtonJSX = forwardRef(
       iconAfter,
       onBlur,
       onKeyUp,
-      onClick,
       size = 'medium',
       ...restProps
     } = props
 
-    const focusVisibleProps = useFocusVisible({ onBlur, onClick, onKeyUp })
+    const focusVisibleProps = useFocusVisible({ onBlur, onKeyUp })
 
     return (
       <ButtonOuter

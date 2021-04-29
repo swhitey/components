@@ -177,13 +177,8 @@ const ListItemInternal = forwardRef(
       }
     }
 
-    const {
-      focusVisible,
-      onClick: outerOnClick,
-      ...focusVisibleHandlers
-    } = useFocusVisible({
+    const { focusVisible, ...focusVisibleHandlers } = useFocusVisible({
       onBlur,
-      onClick: handleOnClickWhitespace,
       onKeyUp,
     })
 
@@ -298,7 +293,7 @@ const ListItemInternal = forwardRef(
           description={description}
           disabled={disabled}
           focusVisible={focusVisible}
-          onClick={outerOnClick}
+          onClick={handleOnClickWhitespace}
           onMouseEnter={handleOnMouseEnter}
           onMouseLeave={handleOnMouseLeave}
           ref={ref}

@@ -50,23 +50,16 @@ export interface ButtonItemProps
 
 const ButtonLayout = forwardRef(
   (
-    {
-      children,
-      onClick: propsOnClick,
-      value,
-      onBlur,
-      onKeyUp,
-      ...props
-    }: ButtonItemProps,
+    { children, onBlur, onClick, onKeyUp, value, ...props }: ButtonItemProps,
     ref: Ref<HTMLButtonElement>
   ) => {
     const { disabled, value: contextValue, onItemClick } = useContext(
       ButtonSetContext
     )
 
-    const onClick = useWrapEvent(onItemClick, propsOnClick)
+    const handleClick = useWrapEvent(onItemClick, onClick)
 
-    const focusVisibleProps = useFocusVisible({ onClick })
+    const focusVisibleProps = useFocusVisible({ onBlur, onKeyUp })
 
     const itemValue =
       value !== undefined ? value : typeof children === 'string' ? children : ''
@@ -83,6 +76,7 @@ const ButtonLayout = forwardRef(
         ref={ref}
         value={itemValue}
         disabled={disabled}
+        onClick={handleClick}
         {...focusVisibleProps}
         {...omitStyledProps(props)}
       >
