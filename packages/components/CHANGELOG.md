@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-alpha.3](https://github.com/looker-open-source/components/compare/v1.2.0-alpha.2...v1.2.0-alpha.3) (2021-04-29)
+
+
+### Bug Fixes
+
+* **RangeSlider:** Value stays within bounds when min/max changes ([#2269](https://github.com/looker-open-source/components/issues/2269)) ([ec27334](https://github.com/looker-open-source/components/commit/ec273341f088e5899a3accd8c6268960dab87c7c))
+
+
+
+
+
 # [1.2.0-alpha.2](https://github.com/looker-open-source/components/compare/v1.2.0-alpha.1...v1.2.0-alpha.2) (2021-04-28)
 
 
