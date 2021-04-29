@@ -32,9 +32,9 @@ We recommend using [Node Version Manager (NVM)](https://github.com/nvm-sh/nvm#in
 ## Packages
 
 - [@looker/components](./packages/components/README.md) — The shared component library which powers various Looker applications
-- [@looker/design-tokens](./packagen/design-tokens/README.md) — Default design values as well as our connection to styled-system
+- [@looker/design-tokens](./packages/design-tokens/README.md) — Default design values as well as our connection to styled-system
 - [@looker/icons](./packages/icons/README.md) — SVG icon library, normally consumed by the `<Icon />` component in our shared component library
-- [@looker/components-test-utils](./packages/test-utils/README.md) — Useful functions for mocking values and testing components.
+- [@looker/components-test-utils](./packages/components-test-utils/README.md) — Useful functions for mocking values and testing components.
 
 ## Applications
 
